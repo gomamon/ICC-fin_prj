@@ -1,8 +1,11 @@
 
 let bgm;
 let analyzer;
-let cats = [];
-let block = [];
+
+let stars = [];
+let clouds = [];
+let cloud_cnt = 0;
+
 let running_man = [];
 let running_cnt = 1;
 let maxDiameter;
@@ -36,7 +39,7 @@ function setup() {
   hoursRadius = radius * 0.5;
   // clockDiameter = radius * 1.7;
   minDiameter = radius * 0.7;
-  maxDiameter = radius * 1.3;
+  maxDiameter = radius * 1.2;
 
   cx = width / 2;
   cy = height / 2;
@@ -46,20 +49,40 @@ let vols = [];
 
 function draw() {
   background(0);
-  var color1 = color(0, 0, 63);
-  var color2 = color(75, 0, 130);
- // bgGradation(0, 0, color1, color2);
+  var color1 = color(101, 54, 128);
+  var color2 = color(57, 75, 135);
+  bgGradation(0, 0, color1, color2);
 
-
+  drawStar();
+  drawCloud();
   drawCity();
   drawClock();
 
-  let frame = floor(frameCount / 2.5) % 72;
-  push();
-  translate(cx, cy);
-  //image(pen, 0,0,400,400,frame*400,0,400,400);
-  pop();
+}
 
+function drawCloud(){
+  if(cloud_cnt == 0){
+    let newCloud = new Cloud;
+    clouds.push(newCloud);    
+  }
+  cloud_cnt++;
+  cloud_cnt %= ceil(random(200,250));
+
+  for(let i=0; i<clouds.length; i++){
+    clouds[i].draw();
+    if(clouds[i].getX()>width){
+      clouds.splice(i,1);
+    }
+  }
+}
+
+
+function drawStar(){
+  for(let i=0; i<20; i++){
+    let newStar = new Star();
+    stars.push(newStar);
+    stars[i].draw();
+  }  
 }
 
 
@@ -80,7 +103,7 @@ function drawCity() {
 
   push();
   stroke(255);
-  noFill();
+  fill(0);
 
   translate(width / 2, height / 2);
 
@@ -114,15 +137,6 @@ function drawClock() {
   let s = map(second(), 0, 60, 0, TWO_PI) - HALF_PI;
   let m = map(minute() + norm(second(), 0, 60), 0, 60, 0, TWO_PI) - HALF_PI;
   let h = map(hour() + norm(minute(), 0, 60), 0, 24, 0, TWO_PI * 2) - HALF_PI;
-
-
-  // if (cats.length == 0) {
-  //   let newcat = new Cat(color(random(150, 255), random(150, 240), random(100, 200)),
-  //     color(random(50, 200), random(50, 200), random(50, 220)),
-  //     color(random(50, 150), random(100, 240), random(100, 240)),
-  //     0, int(random(0, 3)), 100);
-  //   cats.push(newcat);
-  // }
 
   push();
   translate(windowWidth / 2, windowHeight / 2);

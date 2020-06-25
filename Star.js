@@ -2,7 +2,8 @@ class Star {
     constructor() {
       this.x = random(width);
       this.y = random(height);
-      this.size = random(0.25, 3);
+      this.size = random(0.35, 4);
+      this.color = color(random(150,230), random(150,230), random(150, 230));
       this.t = random(TAU);
     }
   
@@ -10,7 +11,7 @@ class Star {
       this.t += 0.1;
       var scale = this.size + sin(this.t) * 2;
       noStroke();
-      fill(255, 255, 237);
+      fill(this.color);
       ellipse(this.x, this.y, scale, scale);
     }
   }
