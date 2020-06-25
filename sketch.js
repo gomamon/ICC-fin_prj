@@ -1,11 +1,31 @@
 
 let bgm;
 let analyzer;
+let fonts=[];
+
+let bigFontSize=30;
+let smallFontSize=20;
 
 let stars = [];
 let clouds = [];
 let cloud_cnt = 0;
+let quots = [
+  "We need men who can dream of things never were.",
+  "To climb steep hills requires slow pace at first.",
+  "The human race has one really effective weapon, and that is laughter.",
+  "We never know the worth of water till the well is dry.",
+  "Weak things united become strong.",
+  "The most beautiful thing in the world is, of course, the world itself.",
+  "The only way to do it is to do it.\n- Merce Cunningham",
+  "Everything you can imagine is real.\n- Pablo Picasso",
+  "Life is a process. We are a process. The universe is a process.\n- Anne Wilson Schaef",
+  "Learn from Yesterday, live for Today, hope for Tomorrow.\n- Albert Einstein",
+  "It's not whether you get knocked down; It's whether you get back up.\n- Vince Lombardi",
+  "An obstacle is often a stepping stone. - Prescott Bush",
+  "If you're going through hell, keep going.\n- Winston Churchill"
+];
 
+let months = ["January", "February", "March", "April", "May", "June", "July", "August","September", "Octaber","November","December"];
 let running_man = [];
 let running_cnt = 1;
 let maxDiameter;
@@ -19,27 +39,28 @@ function preload() {
       running_man.push(img);
     })
   }
-  // pen = loadImage("./images/studying.gif");
+
+  fonts.push(loadFont('./font/Quicksand.ttf'));
   bgm = loadSound('./music/Family_Montage.mp3');
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  // angleMode(DEGREES)
+
   bgm.loop();
   analyzer = new p5.Amplitude();
-  //analyzer.setInput(bgm);
   stroke(255);
 
-  // frameRate(40);
-
   let radius = min(width, height) / 2;
-  secondsRadius = radius * 0.71;
-  minutesRadius = radius * 0.6;
-  hoursRadius = radius * 0.5;
-  // clockDiameter = radius * 1.7;
+  secondsRadius = radius * 0.6;
+  minutesRadius = radius * 0.5;
+  hoursRadius = radius * 0.4;
+
   minDiameter = radius * 0.7;
   maxDiameter = radius * 1.2;
+
+  bigFontSize = map(width, 100, 1500,25,35);
+  smallFontSize = map(width, 100, 1500,15,20);
 
   cx = width / 2;
   cy = height / 2;
@@ -48,6 +69,8 @@ function setup() {
 let vols = [];
 
 function draw() {
+  bgm.amp(0.5);
+
   background(0);
   var color1 = color(101, 54, 128);
   var color2 = color(57, 75, 135);
@@ -57,7 +80,27 @@ function draw() {
   drawCloud();
   drawCity();
   drawClock();
+  drawText();
+}
 
+
+
+let alignWidthSize;
+function drawText(){
+  let y = year();
+  let m = month();
+  let d = day();
+  alignWidthSize = (width/2);
+
+  textSize(bigFontSize);
+  fill(255);
+  noStroke();
+  textFont(fonts[0]);
+  textAlign(CENTER, BASELINE);
+  let data = months[m-1]+" "+d+"th, "+y;
+  text(data, width-alignWidthSize, height-height/8, alignWidthSize);
+  textSize(smallFontSize);
+  text(quots[hour()%13],width-alignWidthSize, height-height/11, alignWidthSize);
 }
 
 function drawCloud(){
@@ -66,7 +109,7 @@ function drawCloud(){
     clouds.push(newCloud);    
   }
   cloud_cnt++;
-  cloud_cnt %= ceil(random(200,250));
+  cloud_cnt %= 220;
 
   for(let i=0; i<clouds.length; i++){
     clouds[i].draw();
@@ -78,7 +121,7 @@ function drawCloud(){
 
 
 function drawStar(){
-  for(let i=0; i<20; i++){
+  for(let i=0; i<40; i++){
     let newStar = new Star();
     stars.push(newStar);
     stars[i].draw();
@@ -107,10 +150,8 @@ function drawCity() {
 
   translate(width / 2, height / 2);
 
-
-
   beginShape();
-  for (let i = 0; i < 360; i++) {
+  for (let i = 0; i < vols.length; i++) {
     let angle = radians(i - 90);
     let r = map(vols[i], 0, 1, minDiameter, maxDiameter);
     let x = r * cos(angle);
@@ -124,14 +165,15 @@ function drawCity() {
   endShape();
   pop();
 
-
   running_cnt += 0.5;
   if (running_cnt > 12) running_cnt = 1;
 
   if (vols.length > 360) {
     vols.splice(0, 1);
   }
+
 }
+
 
 function drawClock() {
   let s = map(second(), 0, 60, 0, TWO_PI) - HALF_PI;
@@ -141,7 +183,7 @@ function drawClock() {
   push();
   translate(windowWidth / 2, windowHeight / 2);
   pop();
-  // Draw the hands of the clock
+
   stroke(255);
   strokeWeight(2);
   line(cx, cy, cx + cos(s) * secondsRadius, cy + sin(s) * secondsRadius);
@@ -150,7 +192,7 @@ function drawClock() {
   strokeWeight(6);
   line(cx, cy, cx + cos(h) * hoursRadius, cy + sin(h) * hoursRadius);
 
-  // Draw the minute ticks
+
   strokeWeight(2);
   beginShape(POINTS);
   for (let a = 0; a < 360; a += 30) {
